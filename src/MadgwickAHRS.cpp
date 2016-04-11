@@ -20,6 +20,7 @@
 // Header files
 
 #include "MadgwickAHRS.h"
+#include "MagneticJammingFilter.h"
 #include <math.h>
 
 //-------------------------------------------------------------------------------------------
@@ -57,7 +58,14 @@ void Madgwick::update(float gx, float gy, float gz, float ax, float ay, float az
 		updateIMU(gx, gy, gz, ax, ay, az);
 		return;
 	}
-
+	
+	magneticJammingFilter.update(mx, my, mz);
+	
+	if(magneticJammingFilter.getJammingStatus()) {
+		updateIMU(gx, gy, gz, ax, ay, az);
+		return;
+	}	
+	
 	// Convert gyroscope degrees/sec to radians/sec
 	gx *= 0.0174533f;
 	gy *= 0.0174533f;

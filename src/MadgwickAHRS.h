@@ -17,6 +17,7 @@
 #ifndef MadgwickAHRS_h
 #define MadgwickAHRS_h
 #include <math.h>
+#include "MagneticJammingFilter.h"
 
 //--------------------------------------------------------------------------------------------
 // Variable declaration
@@ -39,7 +40,10 @@ private:
 // Function declarations
 public:
     Madgwick(void);
-    void begin(float sampleFrequency) { invSampleFreq = 1.0f / sampleFrequency; }
+    void begin(float sampleFrequency) { 
+		invSampleFreq = 1.0f / sampleFrequency; 
+		magneticJammingFilter.begin(sampleFrequency);
+	}
     void update(float gx, float gy, float gz, float ax, float ay, float az, float mx, float my, float mz);
     void updateIMU(float gx, float gy, float gz, float ax, float ay, float az);
     //float getPitch(){return atan2f(2.0f * q2 * q3 - 2.0f * q0 * q1, 2.0f * q0 * q0 + 2.0f * q3 * q3 - 1.0f);};
@@ -68,7 +72,9 @@ public:
     float getYawRadians() {
         if (!anglesComputed) computeAngles();
         return yaw;
-    }
+    } 
+	    
+    MagneticJammingFilter magneticJammingFilter;
 };
 #endif
 
